@@ -589,29 +589,36 @@
                 const currentValue = parseFloat(slider.value);
                 const currentPercent = currentValue / 10.0;
                 
-                // Find the next marker
-                let nextMarker = null;
-                
+                // Find the next marker based on direction
+                let nextMarker;
                 if (event.key === 'ArrowRight') {
-                    // Find first marker to the right of current position
-                    nextMarker = markerData.find(marker => marker.percent > currentPercent);
+                    // Find next marker to the right
+                    nextMarker = markerData.find(marker => marker.percent > currentPercent + 0.1);
+                    // If no marker found to the right, stay at current position
+                    if (!nextMarker && currentPercent < 0.1) {
+                        // If we're at the start, move to first marker
+                        nextMarker = markerData[0];
+                    }
                 } else {
-                    // Find last marker to the left of current position
-                    for (let i = markerData.length - 1; i >= 0; i--) {
-                        if (markerData[i].percent < currentPercent) {
-                            nextMarker = markerData[i];
-                            break;
-                        }
+                    // Find next marker to the left
+                    nextMarker = markerData.reverse().find(marker => marker.percent < currentPercent - 0.1);
+                    markerData.reverse(); // Restore original order
+                    // If no marker found to the left, stay at current position
+                    if (!nextMarker && currentPercent > 99.9) {
+                        // If we're at the end, move to last marker
+                        nextMarker = markerData[markerData.length - 1];
                     }
                 }
 
                 if (nextMarker) {
                     slider.value = Math.round(nextMarker.percent * 10.0);
                     const conflict = conflictData.find(c => c.id === nextMarker.conflictId);
-                    const marker = document.querySelector(`.timeline-marker[data-conflict-id="${conflict.id}"][style*="left: ${nextMarker.percent}%"]`);
-                    const date = marker ? marker.dataset.date : null;
-                    updateDisplays(conflict, date);
-                    showPopupForMarker(nextMarker);
+                    if (conflict) {
+                        const marker = document.querySelector(`.timeline-marker[data-conflict-id="${conflict.id}"][style*="left: ${nextMarker.percent}%"]`);
+                        const date = marker ? marker.dataset.date : null;
+                        updateDisplays(conflict, date);
+                        showPopupForMarker(nextMarker);
+                    }
                 }
             }
         });
