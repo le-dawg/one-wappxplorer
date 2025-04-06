@@ -36,26 +36,24 @@
             --md-sys-color-inverse-primary: #D0BCFF;
 
             /* Custom Conflict Colors */
-            --conflict-color-1: #FFA500; /* Orange */
-            --conflict-color-2: #DC143C; /* Crimson */
-            --conflict-color-3: #20B2AA; /* LightSeaGreen */
-            --conflict-color-4: #9370DB; /* MediumPurple */
+            --conflict-color-1: #FFA500; /* Orange - Finances/Comm */
+            --conflict-color-2: #DC143C; /* Crimson - Deposit Advance */
+            --conflict-color-3: #20B2AA; /* LightSeaGreen - Refund Dispute */
+            --conflict-color-4: #9370DB; /* MediumPurple - Cabinet Access */
 
-            --md-sys-typescale-body-large-font-family-name: 'Roboto', sans-serif; /* Using system default as fallback */
-            --md-sys-typescale-body-large-font-family-style: Regular;
-            --md-sys-typescale-body-large-font-weight: 400px;
+            --md-sys-typescale-body-large-font-family-name: 'Roboto', sans-serif;
+            --md-sys-typescale-body-large-font-weight: 400;
             --md-sys-typescale-body-large-font-size: 16px;
             --md-sys-typescale-body-large-line-height: 24px;
             --md-sys-typescale-body-large-letter-spacing: 0.5px;
 
             --md-sys-typescale-title-medium-font-family-name: 'Roboto', sans-serif;
-            --md-sys-typescale-title-medium-font-family-style: Regular;
-            --md-sys-typescale-title-medium-font-weight: 500px;
+            --md-sys-typescale-title-medium-font-weight: 500;
             --md-sys-typescale-title-medium-font-size: 16px;
             --md-sys-typescale-title-medium-line-height: 24px;
             --md-sys-typescale-title-medium-letter-spacing: 0.15px;
 
-             --md-sys-typescale-label-small-font-family-name: 'Roboto', sans-serif;
+            --md-sys-typescale-label-small-font-family-name: 'Roboto', sans-serif;
             --md-sys-typescale-label-small-font-weight: 500;
             --md-sys-typescale-label-small-font-size: 11px;
             --md-sys-typescale-label-small-line-height: 16px;
@@ -73,11 +71,17 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+             /* Prevent accidental text selection interfering with drag */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         h1 {
             color: var(--md-sys-color-primary);
             text-align: center;
+            margin-bottom: 30px;
         }
 
         .timeline-container {
@@ -85,7 +89,11 @@
             max-width: 1000px;
             margin: 40px auto;
             position: relative;
-            padding: 20px 0 40px 0; /* Add padding for labels */
+            padding: 30px 0 40px 0; /* Increased top padding for markers */
+             /* Prevent accidental dragging of the container */
+            -webkit-user-drag: none;
+            user-select: none; /* Redundant but safe */
+            -webkit-user-select: none;
         }
 
         .timeline-track {
@@ -94,24 +102,26 @@
             background-color: var(--md-sys-color-surface-variant);
             border-radius: 3px;
             position: relative;
-            margin-top: 10px; /* Space for markers */
+            margin-top: 10px; /* Ensure space below markers */
         }
 
+        /* Style the slider input itself */
         .timeline-slider {
             width: 100%;
             position: absolute;
-            top: 7px; /* Align with track center */
+            /* Vertically center on the track's visual center */
+            top: calc(30px + 10px + 3px - 10px); /* container padding + track margin + half track height - half slider height */
             left: 0;
             margin: 0;
             cursor: grab;
-            height: 20px; /* Increase hit area */
-            background: transparent; /* Hide default track */
-            z-index: 10; /* Ensure slider is interactive */
-             -webkit-appearance: none; /* Override default look */
+            height: 20px; /* Generous hit area */
+            background: transparent; /* Make default track invisible */
+            z-index: 10;
+            -webkit-appearance: none;
             appearance: none;
         }
 
-        /* Slider Thumb Styling (Basic Cross-Browser) */
+        /* Slider Thumb Styling */
         .timeline-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -120,9 +130,10 @@
             background: var(--md-sys-color-primary);
             border-radius: 50%;
             cursor: grab;
-            margin-top: -6px; /* Center vertically on the track */
+            /* Adjust margin-top to precisely center thumb on the visual track */
+            margin-top: -6px;
             border: 2px solid var(--md-sys-color-on-primary);
-             box-shadow: 0 1px 3px var(--md-sys-color-shadow);
+            box-shadow: 0 1px 3px var(--md-sys-color-shadow);
         }
 
         .timeline-slider::-moz-range-thumb {
@@ -135,21 +146,25 @@
             box-shadow: 0 1px 3px var(--md-sys-color-shadow);
         }
 
-        .timeline-slider:active::-webkit-slider-thumb {
+        .timeline-slider:active {
+             cursor: grabbing;
+        }
+         .timeline-slider:active::-webkit-slider-thumb {
              cursor: grabbing;
         }
         .timeline-slider:active::-moz-range-thumb {
              cursor: grabbing;
         }
 
-
+        /* Marker Styling */
         .timeline-marker {
             width: 16px;
             height: 16px;
             border-radius: 50%;
             position: absolute;
-            top: 0px; /* Position above the track */
-            transform: translateX(-50%); /* Center horizontally */
+            /* Position markers above the track, aligned with container top padding */
+            top: 22px; /* (30px padding - 16px height / 2) */
+            transform: translateX(-50%);
             cursor: pointer;
             z-index: 5;
             border: 2px solid var(--md-sys-color-surface);
@@ -160,13 +175,13 @@
             transform: translateX(-50%) scale(1.2);
         }
 
-
+        /* Label Styling */
         .timeline-labels {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            margin-top: 10px;
-             font-family: var(--md-sys-typescale-label-small-font-family-name);
+            margin-top: 15px; /* Space below track */
+            font-family: var(--md-sys-typescale-label-small-font-family-name);
             font-weight: var(--md-sys-typescale-label-small-font-weight);
             font-size: var(--md-sys-typescale-label-small-font-size);
             line-height: var(--md-sys-typescale-label-small-line-height);
@@ -174,26 +189,33 @@
             color: var(--md-sys-color-on-surface-variant);
         }
 
-
+        /* Popup Bubble Styling */
         .popup-bubble {
-            display: none; /* Hidden by default */
+            display: none;
             position: absolute;
             background-color: var(--md-sys-color-surface);
             color: var(--md-sys-color-on-surface);
             border: 1px solid var(--md-sys-color-outline);
-            border-radius: 12px; /* MD3 Card style */
+            border-radius: 12px;
             padding: 16px;
-            width: 300px;
+            width: 320px; /* Slightly wider */
             max-width: 90vw;
             z-index: 100;
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Elevation */
-            transform: translate(-50%, -115%); /* Position above marker/thumb */
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            /* Default transform, will be adjusted by JS */
+            transform: translate(-50%, -125%); /* Move further up */
             font-size: 14px;
             line-height: 1.5;
-            pointer-events: none; /* Prevent interference with slider/markers */
+            pointer-events: none;
+             opacity: 0; /* Start hidden for transition */
+            transition: opacity 0.2s ease-in-out;
         }
+         .popup-bubble.visible {
+             display: block;
+             opacity: 1;
+         }
 
-        .popup-bubble::after { /* Optional: Arrow */
+        .popup-bubble::after { /* Arrow */
             content: "";
             position: absolute;
             top: 100%;
@@ -205,7 +227,7 @@
             filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
         }
 
-         .popup-bubble h3 {
+        .popup-bubble h3 {
             margin-top: 0;
             margin-bottom: 8px;
             font-family: var(--md-sys-typescale-title-medium-font-family-name);
@@ -214,15 +236,11 @@
             line-height: var(--md-sys-typescale-title-medium-line-height);
             letter-spacing: var(--md-sys-typescale-title-medium-letter-spacing);
             color: var(--md-sys-color-primary);
-         }
-         .popup-bubble p {
-             margin-bottom: 6px;
-         }
-         .popup-bubble strong {
-             color: var(--md-sys-color-secondary);
-         }
+        }
+        .popup-bubble p { margin-bottom: 6px; }
+        .popup-bubble strong { color: var(--md-sys-color-secondary); }
 
-
+        /* Legend Styling */
         .legend {
             position: fixed;
             bottom: 20px;
@@ -235,27 +253,9 @@
             z-index: 50;
             font-size: 12px;
         }
-
-        .legend h4 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .legend-color {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            margin-right: 8px;
-            border: 1px solid var(--md-sys-color-outline);
-        }
+        .legend h4 { margin-top: 0; margin-bottom: 8px; font-size: 14px; font-weight: 500; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 5px; }
+        .legend-color { width: 14px; height: 14px; border-radius: 50%; margin-right: 8px; border: 1px solid var(--md-sys-color-outline); }
 
     </style>
 </head>
@@ -285,65 +285,61 @@
 
     <script>
         const conflictData = [
-            {
+             {
                 id: 1,
                 title: "Intern Finances & Communication",
-                startDate: "2024-09-12", // Approximate start
-                keyDates: ["2024-09-12", "2024-12-06"], // Key interaction dates
+                // startDate: "2024-09-12", // Less relevant now we use keyDates only
+                keyDates: ["2024-09-12", "2024-12-06", "2024-12-16", "2025-02-05"], // Added relevant dates
                 summary: `
-                    <h3>Intern Finances (Fortune) & Communication Styles</h3>
-                    <p><strong>Description:</strong> Disagreement over whether intern Fortune had sufficient funds due to stipend payout method, leading to accusations about financial responsibility and communication.</p>
-                    <p><strong>Domasan PL's View:</strong> Believed intern faced hardship (€50 left) and Stephan lacked human consideration/communication.</p>
-                    <p><strong>Stephan rakke's View:</strong> Followed procedure based on intern's non-response, felt unfairly accused of wrongdoing, emphasized financial accuracy over controlling intern spending.</p>
-                    <p><strong>Dawg's Insights:</strong> Acknowledged hardship concern, tried de-escalation, noted communication breakdown.</p>
-                    <p><strong>Tally:</strong> Initial indirect accusations from Domasan PL; Stephan accused her of accusing him of embezzlement. Later direct accusations from both sides about misrepresentation and lack of empathy/responsibility.</p>
+                    <h3>Intern Finances (Fortune) & Communication Styles (Sept '24 - Dec '24)</h3>
+                    <p><strong>Description:</strong> Disagreement over whether intern Fortune had sufficient funds due to stipend payout method, escalating into accusations about financial responsibility and communication styles.</p>
+                    <p><strong>Domasan PL's View:</strong> Believed intern faced hardship (€50 left after expenses), felt Stephan lacked human consideration/communication, later emphasized intern's shyness and difficult circumstances (broken phone).</p>
+                    <p><strong>Stephan rakke's View:</strong> Followed procedure based on intern's non-response, felt unfairly accused of wrongdoing (embezzlement), emphasized financial accuracy and procedure, provided evidence of payout amount (€350), stated intern spending is outside LC responsibility.</p>
+                    <p><strong>Dawg's Insights:</strong> Acknowledged hardship concern, tried de-escalation, noted communication breakdown, stressed need for clear policy vs. personal bias.</p>
                 `,
-                color: "var(--conflict-color-1)"
+                color: "var(--conflict-color-1)" // Orange
             },
             {
                 id: 2,
                 title: "Intern Deposit Advance",
-                startDate: "2024-09-18",
-                keyDates: ["2024-09-18", "2024-09-19", "2024-09-20", "2024-09-25", "2024-11-10"],
+                // startDate: "2024-09-18",
+                keyDates: ["2024-09-18", "2024-09-19", "2024-09-20", "2024-09-21", "2024-09-25", "2024-11-10", "2025-01-27", "2025-01-30", "2025-03-30", "2025-03-31", "2025-04-01"], // Added later dates related to deposits
                 summary: `
-                    <h3>Intern Deposit Handling (Siham/Lucia) & Trust</h3>
-                    <p><strong>Description:</strong> Conflict over Domasan PL advancing security deposit (€500) to interns before LC received it, involving risk, trust, and procedure.</p>
-                    <p><strong>Domasan PL's View:</strong> Felt pressured by interns needing funds for travel, sought LC coverage, ultimately lent own money (claiming consultation), felt blamed when landlord withheld part.</p>
-                    <p><strong>Stephan rakke's View:</strong> Stressed LC can't return funds not yet received, procedure (contract/inspection) should be followed, saw Domasan's early payout as risky.</p>
-                    <p><strong>Dawg's Insights:</strong> Acknowledged both sides, suggested landlord relations and inspection (Protokoll) to mitigate risk.</p>
-                    <p><strong>Tally:</strong> Stephan criticized Domasan's decision post-facto; Domasan defended actions based on perceived agreement, later accused Stephan of unclear instructions (related to Fortune's deposit).</p>
+                    <h3>Intern Deposit Handling (Siham/Lucia, Geysa, Mohamed) & Trust (Sept '24 - Apr '25)</h3>
+                    <p><strong>Description:</strong> Recurring conflicts over handling intern security deposits, involving timing (advance payout vs. waiting for landlord return), risk, trust, communication, and differing views on standard procedure.</p>
+                    <p><strong>Domasan PL's View:</strong> Emphasized interns' immediate needs (travel money, banking issues), felt pressured, sometimes advanced funds (claiming consultation/necessity), felt blamed for issues, highlighted lack of clear/timely communication from Stephan on procedure.</p>
+                    <p><strong>Stephan rakke's View:</strong> Stressed LC can't return funds not yet received, procedure (contract/inspection) is key, early payout is risky, stated standard procedure involves landlord/intern direct handling where possible, communicated this but felt ignored or communication was unclear.</p>
+                    <p><strong>Dawg's Insights:</strong> Acknowledged validity of both sides, suggested inspection (Protokoll) to mitigate risk, expressed frustration at recurring issue.</p>
                 `,
-                color: "var(--conflict-color-2)"
+                color: "var(--conflict-color-2)" // Crimson
             },
             {
                 id: 3,
                 title: "Expense Refund Dispute",
-                startDate: "2024-10-23",
-                keyDates: ["2024-10-23", "2024-10-28", "2024-11-11", "2024-12-06", "2025-01-16", "2025-02-04", "2025-02-05", "2025-03-11", "2025-04-01", "2025-04-02"],
+                // startDate: "2024-10-23",
+                keyDates: ["2024-10-23", "2024-10-28", "2024-11-10", "2025-01-16", "2025-01-17", "2025-02-04", "2025-02-05", "2025-03-11", "2025-04-01", "2025-04-02"], // Added Fischbrötchen dates
                 summary: `
-                    <h3>Refund Dispute (€8 Gift, Fischbrötchen, etc.)</h3>
-                    <p><strong>Description:</strong> Stephan delayed/denied refunding Domasan PL for small expenses (conference gift, intern fish sandwiches), citing lack of prior approval and unresolved personal conflict.</p>
-                    <p><strong>Domasan PL's View:</strong> Expenses were legitimate LC costs (representation, intern activity), felt refund withheld due to personal animosity, compared negatively to previous treasurer, demanded refund publicly.</p>
-                    <p><strong>Stephan rakke's View:</strong> Refused refund citing lack of agreement, Domasan's communication, and unresolved conflict; enforced a boundary linking cooperation to conflict resolution; questioned LC benefit.</p>
-                    <p><strong>Dawg's Insights:</strong> Viewed amount as trivial, considered expenses legitimate, frustrated by personal issues blocking LC functions, demanded resolution.</p>
-                    <p><strong>Tally:</strong> Frequent public accusations from Domasan PL (petty games, worst finance guy, abuse of power, gaslighting); Stephan set boundary, accused her of insults/aggression, later accused her of lying.</p>
+                    <h3>Expense Refund Dispute (Gifts, Food, Supplies) (Oct '24 - Apr '25)</h3>
+                    <p><strong>Description:</strong> Stephan delayed/denied refunding Domasan PL for small expenses (conference gift, intern fish sandwiches, JYSK supplies, sponges), citing lack of prior approval, unresolved personal conflict, and questioning LC benefit.</p>
+                    <p><strong>Domasan PL's View:</strong> Expenses were legitimate LC costs (representation, intern activity, supplies), felt refund unfairly withheld due to personal animosity, provided proof of asking, compared negatively to previous treasurer.</p>
+                    <p><strong>Stephan rakke's View:</strong> Linked cooperation/refund to conflict resolution, enforced boundary due to feeling hurt, questioned procedure (prior agreement needed), eventually needed IBAN, contested some small amounts.</p>
+                    <p><strong>Dawg's Insights:</strong> Viewed amounts as trivial, considered expenses legitimate, frustrated by personal issues blocking LC functions, demanded resolution and fund transfer.</p>
                 `,
-                color: "var(--conflict-color-3)"
+                color: "var(--conflict-color-3)" // LightSeaGreen
             },
             {
                 id: 4,
                 title: "Storage Cabinet Access",
-                startDate: "2024-11-28",
+               // startDate: "2024-11-28",
                 keyDates: ["2024-11-28", "2024-12-12", "2024-12-13", "2024-12-16", "2024-12-17", "2024-12-18"],
                 summary: `
-                    <h3>Storage Cabinet (Schrank) Access</h3>
-                    <p><strong>Description:</strong> Domasan PL demanded access to shared IAESTE cabinet controlled by Stephan, who restricted access citing personal items and unresolved conflict.</p>
-                    <p><strong>Domasan PL's View:</strong> Needed access to LC merchandise, saw refusal as Stephan treating LC property as personal and hindering operations due to conflict, rejected compromises (list).</p>
+                    <h3>Storage Cabinet (Schrank) Access (Nov '24 - Dec '24)</h3>
+                    <p><strong>Description:</strong> Domasan PL demanded access to shared IAESTE cabinet controlled by Stephan, who restricted access citing personal items stored within and unresolved conflict.</p>
+                    <p><strong>Domasan PL's View:</strong> Needed access to LC merchandise for planning/activities, saw refusal as misuse of LC property for personal reasons, rejected compromises (list), felt stonewalled.</p>
                     <p><strong>Stephan rakke's View:</strong> Didn't trust Domasan near personal items due to past conflict, offered compromises but refused full access until conflict resolved, perceived demands as pressure/disrespect ("rapist mindset"), accused her of hypocrisy.</p>
                     <p><strong>Dawg's Insights:</strong> General calls for conflict resolution apply.</p>
-                    <p><strong>Tally:</strong> Domasan accused Stephan of misuse of LC property, hindering work, lying; Stephan accused Domasan of insults, throwing items, hypocrisy, having a "rapist mindset" regarding boundaries.</p>
                 `,
-                color: "var(--conflict-color-4)"
+                color: "var(--conflict-color-4)" // MediumPurple
             }
         ];
 
@@ -355,149 +351,205 @@
         const startDateLabel = document.getElementById('startDateLabel');
         const endDateLabel = document.getElementById('endDateLabel');
 
-        // --- Date Range Calculation ---
-        // Find min and max dates from all keyDates across all conflicts
-        let allDates = conflictData.flatMap(c => c.keyDates.map(d => new Date(d).getTime()));
-        const minDate = new Date(Math.min(...allDates));
-        const maxDate = new Date(Math.max(...allDates));
+        let markerData = []; // To store marker positions and associated conflict IDs
 
-        // Add some buffer to the timeline range (e.g., start earlier, end later)
-        const timelineStart = new Date(minDate);
-        timelineStart.setMonth(timelineStart.getMonth() - 1); // 1 month buffer start
-        const timelineEnd = new Date(maxDate);
-        timelineEnd.setMonth(timelineEnd.getMonth() + 1); // 1 month buffer end
+        function initializeTimeline() {
+            // Clear previous markers if any
+            timelineTrack.innerHTML = '';
+            markerData = []; // Reset marker data
 
-        const totalDuration = timelineEnd.getTime() - timelineStart.getTime();
+            // --- Date Range Calculation ---
+            let allDates = conflictData.flatMap(c => c.keyDates.map(d => new Date(d).getTime()));
+            if (allDates.length === 0) { // Handle case with no dates
+                allDates = [new Date("2024-06-01").getTime(), new Date("2025-04-06").getTime()];
+            }
+            const minTimestamp = Math.min(...allDates);
+            const maxTimestamp = Math.max(...allDates);
 
-        // Update timeline labels
-        const formatDateLabel = (date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-        startDateLabel.textContent = formatDateLabel(timelineStart);
-        endDateLabel.textContent = formatDateLabel(timelineEnd);
+            const timelineStart = new Date(minTimestamp);
+            timelineStart.setDate(1); // Start timeline at the beginning of the first conflict month
+            timelineStart.setMonth(timelineStart.getMonth()); // Keep the month
 
-        // --- Populate Legend ---
-         // Clear existing legend items if any
-        legend.innerHTML = '<h4>Conflict Key</h4>'; // Reset header
-        conflictData.forEach(conflict => {
-            const item = document.createElement('div');
-            item.classList.add('legend-item');
-            item.innerHTML = `
-                <span class="legend-color" style="background-color: ${conflict.color};"></span>
-                ${conflict.title}
-            `;
-            legend.appendChild(item);
-        });
+            const timelineEnd = new Date(maxTimestamp);
+            timelineEnd.setDate(1); // End timeline at the beginning of the month *after* the last conflict
+            timelineEnd.setMonth(timelineEnd.getMonth() + 1);
 
-        // --- Create Markers ---
-        conflictData.forEach(conflict => {
-            conflict.keyDates.forEach((dateStr, index) => {
-                const date = new Date(dateStr);
-                const datePos = date.getTime() - timelineStart.getTime();
-                const percentage = (datePos / totalDuration) * 100;
 
-                if (percentage >= 0 && percentage <= 100) {
-                    const marker = document.createElement('div');
-                    marker.classList.add('timeline-marker');
-                    marker.style.left = `${percentage}%`;
-                    marker.style.backgroundColor = conflict.color;
-                    marker.dataset.conflictId = conflict.id; // Link marker to data
-                    marker.dataset.date = dateStr; // Store date
+            const totalDuration = timelineEnd.getTime() - timelineStart.getTime();
 
-                    timelineTrack.appendChild(marker);
+            // Update timeline labels
+            const formatDateLabel = (date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            startDateLabel.textContent = formatDateLabel(timelineStart);
+            endDateLabel.textContent = formatDateLabel(timelineEnd);
 
-                    // Add hover listeners to markers
-                    marker.addEventListener('mouseover', (event) => {
-                        showPopup(event.target, conflict);
-                    });
-                    marker.addEventListener('mouseout', () => {
-                        hidePopup();
-                    });
-                     marker.addEventListener('touchstart', (event) => { // Basic touch support
-                        showPopup(event.target, conflict);
-                    }, { passive: true }); // Improve scroll performance
-                    marker.addEventListener('touchend', () => {
-                        // Optionally hide after a delay or require another tap to hide
-                         hidePopup();
-                    });
-                }
+            // --- Populate Legend ---
+            legend.innerHTML = '<h4>Conflict Key</h4>'; // Reset header
+            conflictData.forEach(conflict => {
+                const item = document.createElement('div');
+                item.classList.add('legend-item');
+                item.innerHTML = `
+                    <span class="legend-color" style="background-color: ${conflict.color};"></span>
+                    ${conflict.title}
+                `;
+                legend.appendChild(item);
             });
-        });
+
+            // --- Create Markers ---
+            conflictData.forEach(conflict => {
+                conflict.keyDates.forEach((dateStr) => {
+                    const date = new Date(dateStr);
+                    const datePos = date.getTime() - timelineStart.getTime();
+                    // Ensure division by zero doesn't happen if duration is 0
+                    const percentage = totalDuration > 0 ? (datePos / totalDuration) * 100 : 0;
+
+                    if (percentage >= 0 && percentage <= 100) {
+                        // Store marker data for snapping
+                        markerData.push({ percent: percentage, conflictId: conflict.id });
+
+                        const marker = document.createElement('div');
+                        marker.classList.add('timeline-marker');
+                        marker.style.left = `${percentage}%`;
+                        marker.style.backgroundColor = conflict.color;
+                        marker.dataset.conflictId = conflict.id;
+                        marker.dataset.date = dateStr;
+
+                        timelineTrack.appendChild(marker);
+
+                        // Add hover listeners to markers
+                        marker.addEventListener('mouseenter', (event) => { // Use mouseenter for less flickering
+                            showPopup(event.target, conflict);
+                        });
+                        marker.addEventListener('mouseleave', () => {
+                            hidePopup();
+                        });
+                        // Basic touch support
+                        marker.addEventListener('touchstart', (event) => {
+                             showPopup(event.target, conflict);
+                         }, { passive: true });
+                         marker.addEventListener('touchend', () => {
+                             // Consider a slight delay before hiding on touch devices
+                             setTimeout(hidePopup, 1500);
+                         });
+                    }
+                });
+            });
+             // Sort marker data by percentage for easier snapping calculation
+             markerData.sort((a, b) => a.percent - b.percent);
+        }
 
         // --- Slider Interaction ---
+        let activeConflictId = null; // Track which conflict popup is shown by slider
+
         slider.addEventListener('input', () => {
-            // Optional: Show popup based on slider position (find nearest marker)
              const sliderValue = parseFloat(slider.value); // 0-1000
              const sliderPercent = sliderValue / 10.0; // 0-100
+             let foundMarker = false;
 
-             // Find the closest marker (this is simplified, could be more complex)
-             let closestMarker = null;
-             let minDistance = Infinity;
-
-             document.querySelectorAll('.timeline-marker').forEach(marker => {
-                 const markerPercent = parseFloat(marker.style.left);
-                 const distance = Math.abs(sliderPercent - markerPercent);
-                 if (distance < minDistance && distance < 1.5) { // Threshold distance 1.5%
-                     minDistance = distance;
-                     closestMarker = marker;
+             // Check proximity to markers
+             for (const markerInfo of markerData) {
+                 const distance = Math.abs(sliderPercent - markerInfo.percent);
+                 if (distance < 2.0) { // Increased threshold to 2%
+                     const conflict = conflictData.find(c => c.id === markerInfo.conflictId);
+                     if (conflict) {
+                         // Calculate approximate thumb position
+                         const sliderRect = slider.getBoundingClientRect();
+                         const thumbX = sliderRect.left + (sliderPercent / 100) * sliderRect.width;
+                         const thumbY = sliderRect.top + sliderRect.height / 2;
+                         showPopupNearPoint(thumbX, thumbY, conflict);
+                         activeConflictId = conflict.id; // Set the active conflict
+                         foundMarker = true;
+                         break; // Show only the first nearby marker's popup
+                     }
                  }
-             });
+             }
 
-             if (closestMarker) {
-                 const conflictId = parseInt(closestMarker.dataset.conflictId);
-                 const conflict = conflictData.find(c => c.id === conflictId);
-                 if(conflict) {
-                    // Get slider thumb position approx
-                    const thumbRect = slider.getBoundingClientRect();
-                    // Approximation: Use slider value percentage for horizontal positioning
-                    const containerRect = timelineContainer.getBoundingClientRect();
-                    const approxThumbX = containerRect.left + (sliderPercent / 100) * containerRect.width;
-                    const approxThumbY = thumbRect.top + thumbRect.height / 2; // Middle of slider element
-
-                    showPopupNearPoint(approxThumbX, approxThumbY, conflict);
-                 }
-             } else {
+             if (!foundMarker && activeConflictId !== null) {
+                 // If slider moved away from any marker and a popup was shown by the slider
                  hidePopup();
+                 activeConflictId = null;
              }
         });
 
+        // --- Snapping Logic ---
+         slider.addEventListener('change', () => { // Event fires when user releases slider
+             const sliderValue = parseFloat(slider.value);
+             const currentPercent = sliderValue / 10.0;
+             let closestMarkerPercent = -1;
+             let minDistance = Infinity;
+
+             // Find the marker percentage closest to the slider's release position
+             markerData.forEach(markerInfo => {
+                 const distance = Math.abs(currentPercent - markerInfo.percent);
+                 if (distance < minDistance) {
+                     minDistance = distance;
+                     closestMarkerPercent = markerInfo.percent;
+                 }
+             });
+
+             if (closestMarkerPercent !== -1) {
+                 // Convert the closest marker percentage back to a slider value (0-1000)
+                 const snappedValue = Math.round(closestMarkerPercent * 10.0);
+                 slider.value = snappedValue; // Snap the slider
+
+                 // Optionally, re-trigger the popup display after snapping
+                 const snappedPercent = snappedValue / 10.0;
+                 const markerInfo = markerData.find(m => Math.abs(m.percent - snappedPercent) < 0.1); // Find the exact marker
+                  if (markerInfo) {
+                      const conflict = conflictData.find(c => c.id === markerInfo.conflictId);
+                       if(conflict) {
+                           const sliderRect = slider.getBoundingClientRect();
+                           const thumbX = sliderRect.left + (snappedPercent / 100) * sliderRect.width;
+                           const thumbY = sliderRect.top + sliderRect.height / 2;
+                           showPopupNearPoint(thumbX, thumbY, conflict); // Show popup at snapped position
+                           activeConflictId = conflict.id;
+                       }
+                  }
+             }
+         });
+
          // --- Popup Functions ---
          function showPopup(element, conflict) {
+            if (activeConflictId !== null && activeConflictId !== conflict.id) {
+                // Hide popup shown by slider if hovering a different marker
+                hidePopup();
+            }
              popup.innerHTML = conflict.summary;
              const rect = element.getBoundingClientRect();
-             const containerRect = timelineContainer.getBoundingClientRect(); // Use container for relative positioning
+             const containerRect = timelineContainer.getBoundingClientRect();
 
-             // Position relative to the marker within the container
              const popupLeft = rect.left - containerRect.left + (rect.width / 2);
-             const popupTop = rect.top - containerRect.top;
+             const popupTop = rect.top - containerRect.top; // Position relative to container
 
              popup.style.left = `${popupLeft}px`;
-             popup.style.top = `${popupTop}px`; // Position above the marker
-             popup.style.display = 'block';
+             popup.style.top = `${popupTop}px`;
+             popup.classList.add('visible'); // Use class for transition
+             activeConflictId = null; // Popup shown by hover, not slider
          }
 
-          function showPopupNearPoint(x, y, conflict) {
+          function showPopupNearPoint(clientX, clientY, conflict) {
              popup.innerHTML = conflict.summary;
              const containerRect = timelineContainer.getBoundingClientRect();
 
-             // Position relative to the point within the container
-             const popupLeft = x - containerRect.left;
-             const popupTop = y - containerRect.top;
+             // Convert clientX/Y (viewport) to coordinates relative to the container
+             const popupLeft = clientX - containerRect.left;
+             const popupTop = clientY - containerRect.top;
 
              popup.style.left = `${popupLeft}px`;
-             popup.style.top = `${popupTop}px`; // Position above the point
-             popup.style.display = 'block';
+             popup.style.top = `${popupTop}px`;
+             popup.classList.add('visible');
           }
 
          function hidePopup() {
-             popup.style.display = 'none';
+             popup.classList.remove('visible');
+             // Optional: Use transitionend event for cleaner hiding if needed
+             // popup.style.display = 'none'; // Can remove if only using opacity
          }
 
-         // Hide popup if clicking outside relevant areas (basic implementation)
-         document.addEventListener('click', (event) => {
-            if (!event.target.closest('.timeline-marker') && event.target !== slider) {
-               //hidePopup(); // Can be annoying if user tries to select text
-            }
-         });
+        // Initialize on load
+        initializeTimeline();
 
+        // Re-initialize on window resize to adjust marker positions
+        window.addEventListener('resize', initializeTimeline);
 
     </script>
 
