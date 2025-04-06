@@ -435,77 +435,106 @@
             });
              // Sort marker data by percentage for easier snapping calculation
              markerData.sort((a, b) => a.percent - b.percent);
+            
+            // Force initial snap to first marker
+            if (markerData.length > 0) {
+                slider.value = Math.round(markerData[0].percent * 10.0);
+            }
         }
 
         // --- Slider Interaction ---
-        let activeConflictId = null; // Track which conflict popup is shown by slider
+        let activeConflictId = null;
+        let lastValidValue = 0; // Track last valid (snapped) position
 
-        slider.addEventListener('input', () => {
-             const sliderValue = parseFloat(slider.value); // 0-1000
-             const sliderPercent = sliderValue / 10.0; // 0-100
-             let foundMarker = false;
+        slider.addEventListener('input', (event) => {
+            const sliderValue = parseFloat(slider.value);
+            const sliderPercent = sliderValue / 10.0;
+            let foundMarker = false;
+            let closestMarker = null;
+            let minDistance = Infinity;
 
-             // Check proximity to markers
-             for (const markerInfo of markerData) {
-                 const distance = Math.abs(sliderPercent - markerInfo.percent);
-                 if (distance < 2.0) { // Increased threshold to 2%
-                     const conflict = conflictData.find(c => c.id === markerInfo.conflictId);
-                     if (conflict) {
-                         // Calculate approximate thumb position
-                         const sliderRect = slider.getBoundingClientRect();
-                         const thumbX = sliderRect.left + (sliderPercent / 100) * sliderRect.width;
-                         const thumbY = sliderRect.top + sliderRect.height / 2;
-                         showPopupNearPoint(thumbX, thumbY, conflict);
-                         activeConflictId = conflict.id; // Set the active conflict
-                         foundMarker = true;
-                         break; // Show only the first nearby marker's popup
-                     }
-                 }
-             }
+            // Find the closest marker
+            for (const markerInfo of markerData) {
+                const distance = Math.abs(sliderPercent - markerInfo.percent);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestMarker = markerInfo;
+                }
+            }
 
-             if (!foundMarker && activeConflictId !== null) {
-                 // If slider moved away from any marker and a popup was shown by the slider
-                 hidePopup();
-                 activeConflictId = null;
-             }
+            if (closestMarker) {
+                const conflict = conflictData.find(c => c.id === closestMarker.conflictId);
+                if (conflict) {
+                    const sliderRect = slider.getBoundingClientRect();
+                    const thumbX = sliderRect.left + (sliderPercent / 100) * sliderRect.width;
+                    const thumbY = sliderRect.top + sliderRect.height / 2;
+                    showPopupNearPoint(thumbX, thumbY, conflict);
+                    activeConflictId = conflict.id;
+                    foundMarker = true;
+                }
+            }
+
+            if (!foundMarker) {
+                hidePopup();
+                activeConflictId = null;
+            }
         });
 
-        // --- Snapping Logic ---
-         slider.addEventListener('change', () => { // Event fires when user releases slider
-             const sliderValue = parseFloat(slider.value);
-             const currentPercent = sliderValue / 10.0;
-             let closestMarkerPercent = -1;
-             let minDistance = Infinity;
+        slider.addEventListener('change', () => {
+            const sliderValue = parseFloat(slider.value);
+            const currentPercent = sliderValue / 10.0;
+            let closestMarkerPercent = markerData[0].percent; // Default to first marker
+            let minDistance = Math.abs(currentPercent - markerData[0].percent);
 
-             // Find the marker percentage closest to the slider's release position
-             markerData.forEach(markerInfo => {
-                 const distance = Math.abs(currentPercent - markerInfo.percent);
-                 if (distance < minDistance) {
-                     minDistance = distance;
-                     closestMarkerPercent = markerInfo.percent;
-                 }
-             });
+            // Find the closest marker
+            markerData.forEach(markerInfo => {
+                const distance = Math.abs(currentPercent - markerInfo.percent);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestMarkerPercent = markerInfo.percent;
+                }
+            });
 
-             if (closestMarkerPercent !== -1) {
-                 // Convert the closest marker percentage back to a slider value (0-1000)
-                 const snappedValue = Math.round(closestMarkerPercent * 10.0);
-                 slider.value = snappedValue; // Snap the slider
+            // Always snap to closest marker
+            const snappedValue = Math.round(closestMarkerPercent * 10.0);
+            slider.value = snappedValue;
+            lastValidValue = snappedValue;
 
-                 // Optionally, re-trigger the popup display after snapping
-                 const snappedPercent = snappedValue / 10.0;
-                 const markerInfo = markerData.find(m => Math.abs(m.percent - snappedPercent) < 0.1); // Find the exact marker
-                  if (markerInfo) {
-                      const conflict = conflictData.find(c => c.id === markerInfo.conflictId);
-                       if(conflict) {
-                           const sliderRect = slider.getBoundingClientRect();
-                           const thumbX = sliderRect.left + (snappedPercent / 100) * sliderRect.width;
-                           const thumbY = sliderRect.top + sliderRect.height / 2;
-                           showPopupNearPoint(thumbX, thumbY, conflict); // Show popup at snapped position
-                           activeConflictId = conflict.id;
-                       }
-                  }
-             }
-         });
+            // Show popup for snapped position
+            const snappedPercent = snappedValue / 10.0;
+            const markerInfo = markerData.find(m => Math.abs(m.percent - snappedPercent) < 0.1);
+            if (markerInfo) {
+                const conflict = conflictData.find(c => c.id === markerInfo.conflictId);
+                if (conflict) {
+                    const sliderRect = slider.getBoundingClientRect();
+                    const thumbX = sliderRect.left + (snappedPercent / 100) * sliderRect.width;
+                    const thumbY = sliderRect.top + sliderRect.height / 2;
+                    showPopupNearPoint(thumbX, thumbY, conflict);
+                    activeConflictId = conflict.id;
+                }
+            }
+        });
+
+        slider.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                event.preventDefault();
+                const currentValue = parseFloat(slider.value);
+                const currentPercent = currentValue / 10.0;
+                
+                // Find the next marker based on arrow direction
+                const nextMarker = markerData.find(marker => 
+                    event.key === 'ArrowLeft' 
+                        ? marker.percent < currentPercent 
+                        : marker.percent > currentPercent
+                );
+
+                if (nextMarker) {
+                    slider.value = Math.round(nextMarker.percent * 10.0);
+                    // Trigger change event to update display
+                    slider.dispatchEvent(new Event('change'));
+                }
+            }
+        });
 
          // --- Popup Functions ---
          function showPopup(element, conflict) {
