@@ -257,6 +257,44 @@
         .legend-item { display: flex; align-items: center; margin-bottom: 5px; }
         .legend-color { width: 14px; height: 14px; border-radius: 50%; margin-right: 8px; border: 1px solid var(--md-sys-color-outline); }
 
+        /* New Key Date Label */
+        .key-date-label {
+            text-align: center;
+            font-family: var(--md-sys-typescale-title-medium-font-family-name);
+            font-size: 16px;
+            color: var(--md-sys-color-primary);
+            margin-bottom: 8px;
+            height: 24px; /* Fixed height to prevent layout shift */
+        }
+
+        /* Persistent Summary Display */
+        .summary-display {
+            width: 90%;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 24px;
+            background-color: var(--md-sys-color-surface);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-family: var(--md-sys-typescale-body-large-font-family-name);
+            font-size: var(--md-sys-typescale-body-large-font-size);
+            line-height: 1.6;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .summary-display h3 {
+            color: var(--md-sys-color-primary);
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .summary-display p {
+            margin-bottom: 12px;
+        }
+
+        .summary-display strong {
+            color: var(--md-sys-color-secondary);
+        }
     </style>
 </head>
 <body>
@@ -264,6 +302,7 @@
     <h1>IAESTE Hamburg Conflict Timeline</h1>
 
     <div class="timeline-container">
+        <div class="key-date-label" id="keyDateLabel"></div>
         <div class="timeline-track">
             <!-- Markers will be added here by JS -->
         </div>
@@ -272,6 +311,10 @@
              <span id="startDateLabel">Jun 2024</span>
              <span id="endDateLabel">Apr 2025</span>
          </div>
+    </div>
+
+    <div class="summary-display" id="summaryDisplay">
+        <!-- Summary content will be added here by JS -->
     </div>
 
     <div class="popup-bubble" id="popupBubble">
@@ -436,9 +479,28 @@
              // Sort marker data by percentage for easier snapping calculation
              markerData.sort((a, b) => a.percent - b.percent);
             
-            // Force initial snap to first marker
-            if (markerData.length > 0) {
-                slider.value = Math.round(markerData[0].percent * 10.0);
+            // Start with slider at 0 instead of snapping to first marker
+            slider.value = 0;
+            updateDisplays(null); // Clear displays initially
+        }
+
+        function updateDisplays(conflict, date = null) {
+            const summaryDisplay = document.getElementById('summaryDisplay');
+            const keyDateLabel = document.getElementById('keyDateLabel');
+
+            if (conflict) {
+                summaryDisplay.innerHTML = conflict.summary;
+                if (date) {
+                    const formattedDate = new Date(date).toLocaleDateString('de-DE', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    keyDateLabel.textContent = `Key Date: ${formattedDate}`;
+                }
+            } else {
+                summaryDisplay.innerHTML = '<p>Move the slider to a marker to see conflict details.</p>';
+                keyDateLabel.textContent = '';
             }
         }
 
@@ -462,9 +524,12 @@
                 }
             }
 
-            if (closestMarker) {
+            if (closestMarker && minDistance < 2.0) {
                 const conflict = conflictData.find(c => c.id === closestMarker.conflictId);
                 if (conflict) {
+                    const marker = document.querySelector(`.timeline-marker[data-conflict-id="${conflict.id}"][style*="left: ${closestMarker.percent}%"]`);
+                    const date = marker ? marker.dataset.date : null;
+                    updateDisplays(conflict, date);
                     const sliderRect = slider.getBoundingClientRect();
                     const thumbX = sliderRect.left + (sliderPercent / 100) * sliderRect.width;
                     const thumbY = sliderRect.top + sliderRect.height / 2;
@@ -472,10 +537,9 @@
                     activeConflictId = conflict.id;
                     foundMarker = true;
                 }
-            }
-
-            if (!foundMarker) {
+            } else {
                 hidePopup();
+                updateDisplays(null);
                 activeConflictId = null;
             }
         });
@@ -509,6 +573,9 @@
                     const sliderRect = slider.getBoundingClientRect();
                     const thumbX = sliderRect.left + (snappedPercent / 100) * sliderRect.width;
                     const thumbY = sliderRect.top + sliderRect.height / 2;
+                    const marker = document.querySelector(`.timeline-marker[data-conflict-id="${conflict.id}"][style*="left: ${markerInfo.percent}%"]`);
+                    const date = marker ? marker.dataset.date : null;
+                    updateDisplays(conflict, date);
                     showPopupNearPoint(thumbX, thumbY, conflict);
                     activeConflictId = conflict.id;
                 }
@@ -518,23 +585,46 @@
         slider.addEventListener('keydown', (event) => {
             if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
                 event.preventDefault();
+                
                 const currentValue = parseFloat(slider.value);
                 const currentPercent = currentValue / 10.0;
                 
-                // Find the next marker based on arrow direction
-                const nextMarker = markerData.find(marker => 
-                    event.key === 'ArrowLeft' 
-                        ? marker.percent < currentPercent 
-                        : marker.percent > currentPercent
-                );
+                // Find the next marker
+                let nextMarker = null;
+                
+                if (event.key === 'ArrowRight') {
+                    // Find first marker to the right of current position
+                    nextMarker = markerData.find(marker => marker.percent > currentPercent);
+                } else {
+                    // Find last marker to the left of current position
+                    for (let i = markerData.length - 1; i >= 0; i--) {
+                        if (markerData[i].percent < currentPercent) {
+                            nextMarker = markerData[i];
+                            break;
+                        }
+                    }
+                }
 
                 if (nextMarker) {
                     slider.value = Math.round(nextMarker.percent * 10.0);
-                    // Trigger change event to update display
-                    slider.dispatchEvent(new Event('change'));
+                    const conflict = conflictData.find(c => c.id === nextMarker.conflictId);
+                    const marker = document.querySelector(`.timeline-marker[data-conflict-id="${conflict.id}"][style*="left: ${nextMarker.percent}%"]`);
+                    const date = marker ? marker.dataset.date : null;
+                    updateDisplays(conflict, date);
+                    showPopupForMarker(nextMarker);
                 }
             }
         });
+
+        function showPopupForMarker(markerInfo) {
+            const conflict = conflictData.find(c => c.id === markerInfo.conflictId);
+            if (conflict) {
+                const sliderRect = slider.getBoundingClientRect();
+                const thumbX = sliderRect.left + (markerInfo.percent / 100) * sliderRect.width;
+                const thumbY = sliderRect.top + sliderRect.height / 2;
+                showPopupNearPoint(thumbX, thumbY, conflict);
+            }
+        }
 
          // --- Popup Functions ---
          function showPopup(element, conflict) {
