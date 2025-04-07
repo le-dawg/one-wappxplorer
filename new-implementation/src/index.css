@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-on-background font-sans m-0 p-5 box-border flex flex-col items-center min-h-screen select-none;
+  }
+
+  h1 {
+    @apply text-primary text-center mb-8;
+  }
+}
+
+@layer components {
+  .timeline-container {
+    @apply w-[90%] max-w-[1000px] mx-auto my-10 relative py-8 px-0;
+  }
+
+  .timeline-track {
+    @apply w-full h-1.5 bg-surface-variant rounded-sm relative mt-2.5;
+  }
+
+  .timeline-slider {
+    @apply w-full absolute top-[33px] left-0 m-0 cursor-grab h-5 bg-transparent z-10 appearance-none;
+  }
+
+  .timeline-slider:active {
+    @apply cursor-grabbing;
+  }
+
+  .timeline-marker {
+    @apply w-4 h-4 rounded-full absolute top-[22px] -translate-x-1/2 cursor-pointer z-5 border-2 border-surface shadow-sm transition-transform duration-100;
+  }
+
+  .timeline-marker:hover {
+    @apply -translate-x-1/2 scale-110;
+  }
+
+  .timeline-labels {
+    @apply flex justify-between w-full mt-4 text-xs font-medium text-on-surface-variant;
+  }
+
+  .popup-bubble {
+    @apply hidden absolute bg-surface text-on-surface border border-outline rounded-xl p-4 w-80 max-w-[90vw] z-50 shadow-md -translate-x-1/2 -translate-y-[125%] text-sm leading-relaxed pointer-events-none opacity-0 transition-opacity duration-200;
+  }
+
+  .popup-bubble.visible {
+    @apply block opacity-100;
+  }
+
+  .popup-bubble::after {
+    @apply content-[''] absolute top-full left-1/2 -ml-2 border-8 border-solid border-t-surface border-r-transparent border-b-transparent border-l-transparent;
+  }
+
+  .popup-bubble h3 {
+    @apply mt-0 mb-2 text-base font-medium text-primary;
+  }
+
+  .popup-bubble p {
+    @apply mb-1.5;
+  }
+
+  .popup-bubble strong {
+    @apply text-secondary;
+  }
+
+  .legend {
+    @apply fixed bottom-5 left-5 bg-surface-variant text-on-surface-variant p-2.5 px-4 rounded-lg shadow-md z-50 text-xs;
+  }
+
+  .legend h4 {
+    @apply mt-0 mb-2 text-sm font-medium;
+  }
+
+  .legend-item {
+    @apply flex items-center mb-1.5;
+  }
+
+  .legend-color {
+    @apply w-3.5 h-3.5 rounded-full mr-2 border border-outline;
+  }
+
+  .key-date-label {
+    @apply text-center text-base text-primary mb-2 h-6;
+  }
+
+  .summary-display {
+    @apply w-[90%] max-w-[1000px] mx-auto my-5 p-6 bg-surface rounded-2xl shadow-sm text-base leading-relaxed text-on-surface;
+  }
+
+  .summary-display h3 {
+    @apply text-primary mt-0 mb-4;
+  }
+
+  .summary-display p {
+    @apply mb-3;
+  }
+
+  .summary-display strong {
+    @apply text-secondary;
+  }
+}
