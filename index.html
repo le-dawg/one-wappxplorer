@@ -13,7 +13,7 @@
             --md-sys-color-on-primary-container: #21005D;
             --md-sys-color-secondary: #625B71;
             --md-sys-color-on-secondary: #FFFFFF;
-            --md-sys-color-secondary-container: #E8DEF8;
+            --md-ssys-color-secondary-container: #E8DEF8;
             --md-sys-color-on-secondary-container: #1D192B;
             --md-sys-color-tertiary: #7D5260;
             --md-sys-color-on-tertiary: #FFFFFF;
@@ -267,11 +267,56 @@
             font-weight: 500;
             color: var(--md-sys-color-primary);
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .legend {
+                position: static;
+                margin: 20px auto;
+                width: 90%;
+                max-width: 600px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+                background-color: var(--md-sys-color-surface);
+            }
+            .legend-item {
+                margin: 0;
+                padding: 5px 10px;
+            }
+            
+            .info-box {
+                position: static;
+                margin: 20px auto;
+                width: 90%;
+                max-width: 600px;
+            }
+
+            /* Enhance slider for touch */
+            .timeline-slider {
+                height: 44px; /* Larger touch target */
+            }
+            .timeline-slider::-webkit-slider-thumb {
+                width: 24px;
+                height: 24px;
+            }
+            .timeline-slider::-moz-range-thumb {
+                width: 24px;
+                height: 24px;
+            }
+        }
+
     </style>
 </head>
 <body>
 
     <h1>IAESTE Hamburg Conflict Timeline</h1>
+
+    <div class="legend" id="legend">
+        <h4>Color Coded Legend</h4>
+        <!-- Legend items added by JS -->
+    </div>
 
     <div class="timeline-container">
         <div class="key-date-label" id="keyDateLabel"></div>
@@ -292,11 +337,6 @@
     <div class="info-box">
         <h3>About this app</h3>
         This app is an artefact to help others understand my perspective on aspects of this conflict. This is my final take, none of it is up for discussion. It has cost me a lot of time, energy and by way of being mind-raped by both parties and losing focus, substantial amounts of money to compensate for and translate between two people who have opposing coping mechanisms.
-    </div>
-
-    <div class="legend" id="legend">
-        <h4>Color Codes (Legend)</h4>
-        <!-- Legend items added by JS -->
     </div>
 
     <script>
@@ -443,6 +483,16 @@
             // Start with slider at 0 instead of snapping to first marker
             slider.value = 0;
             updateDisplays(null); // Clear displays initially
+
+            // Start with first marker's data if available
+            if (markerData.length > 0) {
+                const firstMarker = markerData[0];
+                const firstConflict = conflictData.find(c => c.id === firstMarker.conflictId);
+                if (firstConflict) {
+                    updateDisplays(firstConflict, firstConflict.keyDates[0]);
+                    slider.value = Math.round(firstMarker.percent * 10.0);
+                }
+            }
         }
 
         function updateDisplays(conflict, date = null) {
@@ -556,6 +606,32 @@
                 }
             }
         });
+
+        // Add touch swipe handling
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchEndX - touchStartX;
+            
+            if (Math.abs(diff) < swipeThreshold) return;
+            
+            // Simulate arrow key press based on swipe direction
+            const event = new KeyboardEvent('keydown', {
+                key: diff > 0 ? 'ArrowLeft' : 'ArrowRight'
+            });
+            slider.dispatchEvent(event);
+        }
 
         // Initialize on load
         initializeTimeline();
