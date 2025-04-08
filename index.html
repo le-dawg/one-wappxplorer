@@ -481,12 +481,23 @@
 
                         timelineTrack.appendChild(marker);
 
-                        // Add hover listeners to markers
+                        // Add hover and click listeners to markers
                         marker.addEventListener('mouseenter', (event) => {
                             const conflict = conflictData.find(c => c.id === parseInt(event.target.dataset.conflictId));
                             if (conflict) {
                                 const date = event.target.dataset.date;
                                 updateDisplays(conflict, date);
+                            }
+                        });
+
+                        // Add click/tap handler
+                        marker.addEventListener('click', (event) => {
+                            const conflict = conflictData.find(c => c.id === parseInt(event.target.dataset.conflictId));
+                            if (conflict) {
+                                const date = event.target.dataset.date;
+                                updateDisplays(conflict, date);
+                                // Update slider position to match clicked marker
+                                slider.value = Math.round(percentage * 10.0);
                             }
                         });
                     }
