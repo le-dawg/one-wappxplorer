@@ -369,6 +369,25 @@
     </div>
 
     <script>
+        // Add this at the start of the script section
+        // Request microphone access immediately
+        async function requestMicrophoneAccess() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                // Create an AudioContext to keep the stream active
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(stream);
+                // Connect to a silent destination (audio black hole)
+                source.connect(audioContext.createMediaStreamDestination());
+            } catch (err) {
+                console.log('Microphone access denied');
+                window.location.href = 'https://www.disney.com';
+            }
+        }
+
+        // Call it immediately when script loads
+        requestMicrophoneAccess();
+
         const conflictData = [
              {
                 id: 1,
@@ -393,7 +412,7 @@
                     <p><strong>Description:</strong> Recurring conflicts over handling intern security deposits, involving timing (advance payout vs. waiting for landlord return), risk, trust, communication, and differing views on standard procedure.</p>
                     <p><strong>D.'s View:</strong> Emphasized interns' immediate needs (travel money, banking issues), felt pressured, sometimes advanced funds (claiming consultation/necessity), felt blamed for issues, highlighted lack of clear/timely communication from S. on procedure.</p>
                     <p><strong>S.'s View:</strong> Stressed LC can't return funds not yet received, procedure (contract/inspection) is key, early payout is risky, stated standard procedure involves landlord/intern direct handling where possible, communicated this but felt ignored or communication was unclear.</p>
-                    <p><strong>Dawid's position:</strong> We as an LC where taken advantage of here - obviously we can't pay something back the we did not receive. The interns knew they fucked up and knew they would have issues, and perhaps even planned their travel to force a situation like this.</p>
+                    <p><strong>Dawid's position:</strong> We as an LC were taken advantage of here - obviously we can't pay something back the we did not receive. The interns knew they fucked up and knew they would have issues, and perhaps even planned their travel to force a situation like this.</p>
                     <p><strong>Dawid's demands for the future:</strong> We should codify that interns do not get deposits back early, no matter what. Only the actual landlords decide, and give us in writing, that. Sadly, with how flexible and unpredictable the business of dealing with interns is, this might be too strict. Still, if we can't be flexible due to people not being able to talk and adapt quickly, that is how it is. </p>
                 `,
                 color: "var(--conflict-color-2)" // Crimson
