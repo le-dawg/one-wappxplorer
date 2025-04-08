@@ -269,13 +269,15 @@
         }
 
         /* Hide swipe instruction by default (for desktop) */
-        .swipe-instruction {
-            display: none;
-            text-align: center;
-            color: var(--md-sys-color-on-surface-variant);
-            font-size: 14px;
-            margin: 10px auto;
-            font-weight: normal;
+        @media (min-width: 769px) {
+            .swipe-instruction {
+                display: none;
+                text-align: center;
+                color: var(--md-sys-color-on-surface-variant);
+                font-size: 18px;
+                margin: 10px auto;
+                font-weight: normal;
+            }
         }
 
         /* Mobile Responsiveness */
