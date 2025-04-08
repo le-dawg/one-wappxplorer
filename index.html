@@ -189,57 +189,6 @@
             color: var(--md-sys-color-on-surface-variant);
         }
 
-        /* Popup Bubble Styling */
-        .popup-bubble {
-            display: none;
-            position: absolute;
-            background-color: var(--md-sys-color-surface);
-            color: var(--md-sys-color-on-surface);
-            border: 1px solid var(--md-sys-color-outline);
-            border-radius: 12px;
-            padding: 16px;
-            width: 320px; /* Slightly wider */
-            max-width: 90vw;
-            z-index: 100;
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-            /* Default transform, will be adjusted by JS */
-            transform: translate(-50%, -125%); /* Move further up */
-            font-size: 14px;
-            line-height: 1.5;
-            pointer-events: none;
-             opacity: 0; /* Start hidden for transition */
-            transition: opacity 0.2s ease-in-out;
-        }
-         .popup-bubble.visible {
-             display: block;
-             opacity: 1;
-         }
-
-        .popup-bubble::after { /* Arrow */
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -8px;
-            border-width: 8px;
-            border-style: solid;
-            border-color: var(--md-sys-color-surface) transparent transparent transparent;
-            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
-        }
-
-        .popup-bubble h3 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-family: var(--md-sys-typescale-title-medium-font-family-name);
-            font-weight: var(--md-sys-typescale-title-medium-font-weight);
-            font-size: var(--md-sys-typescale-title-medium-font-size);
-            line-height: var(--md-sys-typescale-title-medium-line-height);
-            letter-spacing: var(--md-sys-typescale-title-medium-letter-spacing);
-            color: var(--md-sys-color-primary);
-        }
-        .popup-bubble p { margin-bottom: 6px; }
-        .popup-bubble strong { color: var(--md-sys-color-secondary); }
-
         /* Legend Styling */
         .legend {
             position: fixed;
@@ -317,12 +266,8 @@
         <!-- Summary content will be added here by JS -->
     </div>
 
-    <div class="popup-bubble" id="popupBubble">
-        <!-- Content added by JS -->
-    </div>
-
     <div class="legend" id="legend">
-        <h4>Conflict Key</h4>
+        <h4>Color Codes (Legend)</h4>
         <!-- Legend items added by JS -->
     </div>
 
@@ -331,8 +276,7 @@
              {
                 id: 1,
                 title: "Intern Finances & Communication",
-                // startDate: "2024-09-12", // Less relevant now we use keyDates only
-                keyDates: ["2024-09-12", "2024-12-06", "2024-12-16", "2025-02-05"], // Added relevant dates
+                keyDates: ["2024-09-12", "2024-12-06", "2024-12-16", "2025-02-05"],
                 summary: `
                     <h3>Intern Finances (Fortune) & Communication Styles (Sept '24 - Dec '24)</h3>
                     <p><strong>Description:</strong> Disagreement over whether intern Fortune had sufficient funds due to stipend payout method, escalating into accusations about financial responsibility and communication styles.</p>
@@ -345,8 +289,7 @@
             {
                 id: 2,
                 title: "Intern Deposit Advance",
-                // startDate: "2024-09-18",
-                keyDates: ["2024-09-18", "2024-09-19", "2024-09-20", "2024-09-21", "2024-09-25", "2024-11-10", "2025-01-27", "2025-01-30", "2025-03-30", "2025-03-31", "2025-04-01"], // Added later dates related to deposits
+                keyDates: ["2024-09-18", "2024-09-19", "2024-09-20", "2024-09-21", "2024-09-25", "2024-11-10", "2025-01-27", "2025-01-30", "2025-03-30", "2025-03-31", "2025-04-01"],
                 summary: `
                     <h3>Intern Deposit Handling (Siham/Lucia, Geysa, Mohamed) & Trust (Sept '24 - Apr '25)</h3>
                     <p><strong>Description:</strong> Recurring conflicts over handling intern security deposits, involving timing (advance payout vs. waiting for landlord return), risk, trust, communication, and differing views on standard procedure.</p>
@@ -359,8 +302,7 @@
             {
                 id: 3,
                 title: "Expense Refund Dispute",
-                // startDate: "2024-10-23",
-                keyDates: ["2024-10-23", "2024-10-28", "2024-11-10", "2025-01-16", "2025-01-17", "2025-02-04", "2025-02-05", "2025-03-11", "2025-04-01", "2025-04-02"], // Added Fischbrötchen dates
+                keyDates: ["2024-10-23", "2024-10-28", "2024-11-10", "2025-01-16", "2025-01-17", "2025-02-04", "2025-02-05", "2025-03-11", "2025-04-01", "2025-04-02"],
                 summary: `
                     <h3>Expense Refund Dispute (Gifts, Food, Supplies) (Oct '24 - Apr '25)</h3>
                     <p><strong>Description:</strong> Stephan delayed/denied refunding Domasan PL for small expenses (conference gift, intern fish sandwiches, JYSK supplies, sponges), citing lack of prior approval, unresolved personal conflict, and questioning LC benefit.</p>
@@ -373,7 +315,6 @@
             {
                 id: 4,
                 title: "Storage Cabinet Access",
-               // startDate: "2024-11-28",
                 keyDates: ["2024-11-28", "2024-12-12", "2024-12-13", "2024-12-16", "2024-12-17", "2024-12-18"],
                 summary: `
                     <h3>Storage Cabinet (Schrank) Access (Nov '24 - Dec '24)</h3>
@@ -389,7 +330,6 @@
         const timelineContainer = document.querySelector('.timeline-container');
         const timelineTrack = timelineContainer.querySelector('.timeline-track');
         const slider = document.getElementById('timelineSlider');
-        const popup = document.getElementById('popupBubble');
         const legend = document.getElementById('legend');
         const startDateLabel = document.getElementById('startDateLabel');
         const endDateLabel = document.getElementById('endDateLabel');
@@ -459,20 +399,13 @@
                         timelineTrack.appendChild(marker);
 
                         // Add hover listeners to markers
-                        marker.addEventListener('mouseenter', (event) => { // Use mouseenter for less flickering
-                            showPopup(event.target, conflict);
+                        marker.addEventListener('mouseenter', (event) => {
+                            const conflict = conflictData.find(c => c.id === parseInt(event.target.dataset.conflictId));
+                            if (conflict) {
+                                const date = event.target.dataset.date;
+                                updateDisplays(conflict, date);
+                            }
                         });
-                        marker.addEventListener('mouseleave', () => {
-                            hidePopup();
-                        });
-                        // Basic touch support
-                        marker.addEventListener('touchstart', (event) => {
-                             showPopup(event.target, conflict);
-                         }, { passive: true });
-                         marker.addEventListener('touchend', () => {
-                             // Consider a slight delay before hiding on touch devices
-                             setTimeout(hidePopup, 1500);
-                         });
                     }
                 });
             });
@@ -499,23 +432,18 @@
                     keyDateLabel.textContent = `Key Date: ${formattedDate}`;
                 }
             } else {
-                summaryDisplay.innerHTML = '<p>Move the slider to a marker to see conflict details.</p>';
+                summaryDisplay.innerHTML = '<p>Move the slider to a marker to see conflict details.</p><p> Use the arrow keys to quickly iterate over the date markers.</p>';
                 keyDateLabel.textContent = '';
             }
         }
 
         // --- Slider Interaction ---
-        let activeConflictId = null;
-        let lastValidValue = 0; // Track last valid (snapped) position
-
         slider.addEventListener('input', (event) => {
             const sliderValue = parseFloat(slider.value);
             const sliderPercent = sliderValue / 10.0;
-            let foundMarker = false;
             let closestMarker = null;
             let minDistance = Infinity;
 
-            // Find the closest marker
             for (const markerInfo of markerData) {
                 const distance = Math.abs(sliderPercent - markerInfo.percent);
                 if (distance < minDistance) {
@@ -530,17 +458,9 @@
                     const marker = document.querySelector(`.timeline-marker[data-conflict-id="${conflict.id}"][style*="left: ${closestMarker.percent}%"]`);
                     const date = marker ? marker.dataset.date : null;
                     updateDisplays(conflict, date);
-                    const sliderRect = slider.getBoundingClientRect();
-                    const thumbX = sliderRect.left + (sliderPercent / 100) * sliderRect.width;
-                    const thumbY = sliderRect.top + sliderRect.height / 2;
-                    showPopupNearPoint(thumbX, thumbY, conflict);
-                    activeConflictId = conflict.id;
-                    foundMarker = true;
                 }
             } else {
-                hidePopup();
                 updateDisplays(null);
-                activeConflictId = null;
             }
         });
 
@@ -562,22 +482,16 @@
             // Always snap to closest marker
             const snappedValue = Math.round(closestMarkerPercent * 10.0);
             slider.value = snappedValue;
-            lastValidValue = snappedValue;
 
-            // Show popup for snapped position
+            // Show summary for snapped position
             const snappedPercent = snappedValue / 10.0;
             const markerInfo = markerData.find(m => Math.abs(m.percent - snappedPercent) < 0.1);
             if (markerInfo) {
                 const conflict = conflictData.find(c => c.id === markerInfo.conflictId);
                 if (conflict) {
-                    const sliderRect = slider.getBoundingClientRect();
-                    const thumbX = sliderRect.left + (snappedPercent / 100) * sliderRect.width;
-                    const thumbY = sliderRect.top + sliderRect.height / 2;
                     const marker = document.querySelector(`.timeline-marker[data-conflict-id="${conflict.id}"][style*="left: ${markerInfo.percent}%"]`);
                     const date = marker ? marker.dataset.date : null;
                     updateDisplays(conflict, date);
-                    showPopupNearPoint(thumbX, thumbY, conflict);
-                    activeConflictId = conflict.id;
                 }
             }
         });
@@ -589,23 +503,16 @@
                 const currentValue = parseFloat(slider.value);
                 const currentPercent = currentValue / 10.0;
                 
-                // Find the next marker based on direction
                 let nextMarker;
                 if (event.key === 'ArrowRight') {
-                    // Find next marker to the right
                     nextMarker = markerData.find(marker => marker.percent > currentPercent + 0.1);
-                    // If no marker found to the right, stay at current position
                     if (!nextMarker && currentPercent < 0.1) {
-                        // If we're at the start, move to first marker
                         nextMarker = markerData[0];
                     }
                 } else {
-                    // Find next marker to the left
                     nextMarker = markerData.reverse().find(marker => marker.percent < currentPercent - 0.1);
-                    markerData.reverse(); // Restore original order
-                    // If no marker found to the left, stay at current position
+                    markerData.reverse();
                     if (!nextMarker && currentPercent > 99.9) {
-                        // If we're at the end, move to last marker
                         nextMarker = markerData[markerData.length - 1];
                     }
                 }
@@ -617,59 +524,10 @@
                         const marker = document.querySelector(`.timeline-marker[data-conflict-id="${conflict.id}"][style*="left: ${nextMarker.percent}%"]`);
                         const date = marker ? marker.dataset.date : null;
                         updateDisplays(conflict, date);
-                        showPopupForMarker(nextMarker);
                     }
                 }
             }
         });
-
-        function showPopupForMarker(markerInfo) {
-            const conflict = conflictData.find(c => c.id === markerInfo.conflictId);
-            if (conflict) {
-                const sliderRect = slider.getBoundingClientRect();
-                const thumbX = sliderRect.left + (markerInfo.percent / 100) * sliderRect.width;
-                const thumbY = sliderRect.top + sliderRect.height / 2;
-                showPopupNearPoint(thumbX, thumbY, conflict);
-            }
-        }
-
-         // --- Popup Functions ---
-         function showPopup(element, conflict) {
-            if (activeConflictId !== null && activeConflictId !== conflict.id) {
-                // Hide popup shown by slider if hovering a different marker
-                hidePopup();
-            }
-             popup.innerHTML = conflict.summary;
-             const rect = element.getBoundingClientRect();
-             const containerRect = timelineContainer.getBoundingClientRect();
-
-             const popupLeft = rect.left - containerRect.left + (rect.width / 2);
-             const popupTop = rect.top - containerRect.top; // Position relative to container
-
-             popup.style.left = `${popupLeft}px`;
-             popup.style.top = `${popupTop}px`;
-             popup.classList.add('visible'); // Use class for transition
-             activeConflictId = null; // Popup shown by hover, not slider
-         }
-
-          function showPopupNearPoint(clientX, clientY, conflict) {
-             popup.innerHTML = conflict.summary;
-             const containerRect = timelineContainer.getBoundingClientRect();
-
-             // Convert clientX/Y (viewport) to coordinates relative to the container
-             const popupLeft = clientX - containerRect.left;
-             const popupTop = clientY - containerRect.top;
-
-             popup.style.left = `${popupLeft}px`;
-             popup.style.top = `${popupTop}px`;
-             popup.classList.add('visible');
-          }
-
-         function hidePopup() {
-             popup.classList.remove('visible');
-             // Optional: Use transitionend event for cleaner hiding if needed
-             // popup.style.display = 'none'; // Can remove if only using opacity
-         }
 
         // Initialize on load
         initializeTimeline();
