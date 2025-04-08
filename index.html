@@ -244,6 +244,29 @@
         .summary-display strong {
             color: var(--md-sys-color-secondary);
         }
+
+        /* Info Box Styling */
+        .info-box {
+            position: fixed;
+            bottom: 140px; /* Position above legend */
+            left: 20px;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--md-sys-color-shadow);
+            z-index: 50;
+            font-size: 12px;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+        .info-box h3 { 
+            margin-top: 0; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+            font-weight: 500;
+            color: var(--md-sys-color-primary);
+        }
     </style>
 </head>
 <body>
@@ -264,6 +287,11 @@
 
     <div class="summary-display" id="summaryDisplay">
         <!-- Summary content will be added here by JS -->
+    </div>
+
+    <div class="info-box">
+        <h3>About this app</h3>
+        This app is an artefact to help others understand my perspective on aspects of this conflict. This is my final take, none of it is up for discussion. It has cost me a lot of time, energy and by way of being mind-raped by both parties and losing focus, substantial amounts of money to compensate for and translate between two people who have opposing coping mechanisms.
     </div>
 
     <div class="legend" id="legend">
@@ -366,7 +394,7 @@
             endDateLabel.textContent = formatDateLabel(timelineEnd);
 
             // --- Populate Legend ---
-            legend.innerHTML = '<h4>Conflict Key</h4>'; // Reset header
+            legend.innerHTML = '<h4>Color Coded Legend</h4>'; // Reset header
             conflictData.forEach(conflict => {
                 const item = document.createElement('div');
                 item.classList.add('legend-item');
