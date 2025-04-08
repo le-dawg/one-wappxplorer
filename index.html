@@ -305,8 +305,21 @@
                 width: 24px;
                 height: 24px;
             }
+
+            .swipe-instruction {
+                display: block;
+                text-align: center;
+                color: var(--md-sys-color-on-surface-variant);
+                font-size: 14px;
+                margin: 10px auto;
+                font-weight: normal;
+            }
         }
 
+        /* Hide swipe instruction on desktop */
+        .swipe-instruction {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -317,6 +330,8 @@
         <h4>Color Coded Legend</h4>
         <!-- Legend items added by JS -->
     </div>
+
+    <h2 class="swipe-instruction">Swipe &lt;-&gt; for prev/next entry</h2>
 
     <div class="timeline-container">
         <div class="key-date-label" id="keyDateLabel"></div>
