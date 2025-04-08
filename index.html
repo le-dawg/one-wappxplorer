@@ -239,6 +239,20 @@
         }
 
         /* Info Box Styling */
+        .info-box-2 {
+            position: fixed;
+            bottom: 407px; /* Position above legend */
+            left: 20px;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            padding: 15px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--md-sys-color-shadow);
+            z-index: 50;
+            font-size: 12px;
+            width: var(--legend-width, fit-content);
+        }
+        
         .info-box {
             position: fixed;
             bottom: 170px; /* Position above legend */
@@ -341,6 +355,16 @@
 
     <div class="summary-display" id="summaryDisplay">
         <!-- Summary content will be added here by JS -->
+    </div>
+
+    <div class="info-box-2">
+        <h3>Usage</h3>
+        <ul>
+            <li>Use the slider to navigate through the timeline.</li>
+            <li>Click on markers if lazy or drunk.</li>
+            <li>Swipe left/right on mobile for quick navigation.</li>
+            <li>If keys aren't working, drag the slider once to initialize.</li>
+        </ul>
     </div>
 
     <div class="info-box">
