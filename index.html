@@ -202,6 +202,7 @@
             box-shadow: 0 2px 4px var(--md-sys-color-shadow);
             z-index: 50;
             font-size: 12px;
+            width: fit-content;
         }
         .legend h4 { margin-top: 0; margin-bottom: 8px; font-size: 14px; font-weight: 500; }
         .legend-item { display: flex; align-items: center; margin-bottom: 5px; }
@@ -248,8 +249,7 @@
             box-shadow: 0 2px 4px var(--md-sys-color-shadow);
             z-index: 50;
             font-size: 12px;
-            max-width: 300px;
-            line-height: 1.4;
+            width: var(--legend-width, fit-content);
         }
         .info-box h3 { 
             margin-top: 0; 
@@ -641,6 +641,16 @@
             });
             slider.dispatchEvent(event);
         }
+
+        // Add this at the end of your existing script
+        function updateInfoBoxWidth() {
+            const legendWidth = document.querySelector('.legend').offsetWidth;
+            document.documentElement.style.setProperty('--legend-width', `${legendWidth}px`);
+        }
+
+        // Run initially and on window resize
+        window.addEventListener('load', updateInfoBoxWidth);
+        window.addEventListener('resize', updateInfoBoxWidth);
 
         // Initialize on load
         initializeTimeline();
