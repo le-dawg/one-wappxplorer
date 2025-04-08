@@ -406,10 +406,15 @@
     </div>
 
     <script>
+        // Detect touch capability once at startup
+        const hasTouchInput = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        
+        // If not a touch device, hide modal immediately
+        if (!hasTouchInput) {
+            document.getElementById('startModal').style.display = 'none';
+        }
+        
         async function handleStart() {
-            // Check for touch capability
-            const hasTouchInput = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-            
             if (hasTouchInput) {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
