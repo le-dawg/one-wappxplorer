@@ -109,13 +109,14 @@
         .timeline-slider {
             width: 100%;
             position: absolute;
-            /* Vertically center on the track's visual center */
-            top: calc(30px + 10px + 3px - 10px); /* container padding + track margin + half track height - half slider height */
+            /* Center the slider on the track */
+            top: 50%;
+            transform: translateY(-50%);
             left: 0;
             margin: 0;
             cursor: grab;
-            height: 20px; /* Generous hit area */
-            background: transparent; /* Make default track invisible */
+            height: 20px;
+            background: transparent;
             z-index: 10;
             -webkit-appearance: none;
             appearance: none;
