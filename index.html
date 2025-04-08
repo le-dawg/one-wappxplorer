@@ -206,16 +206,6 @@
         .legend-item { display: flex; align-items: center; margin-bottom: 5px; }
         .legend-color { width: 14px; height: 14px; border-radius: 50%; margin-right: 8px; border: 1px solid var(--md-sys-color-outline); }
 
-        /* New Key Date Label */
-        .key-date-label {
-            text-align: center;
-            font-family: var(--md-sys-typescale-title-medium-font-family-name);
-            font-size: 16px;
-            color: var(--md-sys-color-primary);
-            margin-bottom: 8px;
-            height: 24px; /* Fixed height to prevent layout shift */
-        }
-
         /* Persistent Summary Display */
         .summary-display {
             width: 90%;
@@ -274,7 +264,7 @@
                 display: none;
                 text-align: center;
                 color: var(--md-sys-color-on-surface-variant);
-                font-size: 18px;
+                font-size: 18px !important;
                 margin: 10px auto;
                 font-weight: normal;
             }
@@ -334,10 +324,9 @@
         <!-- Legend items added by JS -->
     </div>
 
-    <h2 class="swipe-instruction">Swipe &lt;-&gt; for prev/next entry</h2>
+    <h3 class="swipe-instruction">Swipe &lt;-&gt; for prev/next entry</h3>
 
     <div class="timeline-container">
-        <div class="key-date-label" id="keyDateLabel"></div>
         <div class="timeline-track">
             <!-- Markers will be added here by JS -->
         </div>
@@ -526,21 +515,11 @@
 
         function updateDisplays(conflict, date = null) {
             const summaryDisplay = document.getElementById('summaryDisplay');
-            const keyDateLabel = document.getElementById('keyDateLabel');
 
             if (conflict) {
                 summaryDisplay.innerHTML = conflict.summary;
-                if (date) {
-                    const formattedDate = new Date(date).toLocaleDateString('de-DE', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric'
-                    });
-                    keyDateLabel.textContent = `Key Date: ${formattedDate}`;
-                }
             } else {
                 summaryDisplay.innerHTML = '<p>Move the slider to a marker to see conflict details.</p><p> Use the arrow keys to quickly iterate over the date markers.</p>';
-                keyDateLabel.textContent = '';
             }
         }
 
