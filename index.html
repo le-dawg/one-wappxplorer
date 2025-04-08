@@ -407,15 +407,21 @@
 
     <script>
         async function handleStart() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioContext.createMediaStreamSource(stream);
-                source.connect(audioContext.createMediaStreamDestination());
-                document.getElementById('startModal').style.display = 'none';
-            } catch (err) {
-                window.location.href = 'https://www.disney.com';
+            // Check for touch capability
+            const hasTouchInput = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            
+            if (hasTouchInput) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = audioContext.createMediaStreamSource(stream);
+                    source.connect(audioContext.createMediaStreamDestination());
+                } catch (err) {
+                    window.location.href = 'https://www.disney.com';
+                    return;
+                }
             }
+            document.getElementById('startModal').style.display = 'none';
         }
 
         const conflictData = [
